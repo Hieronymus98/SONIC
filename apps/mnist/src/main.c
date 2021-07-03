@@ -247,7 +247,7 @@ void task_init() {
 void task_compute() {
 	uint16_t state = CUR_SCRATCH[0];
 	if(state == 0) {
-		MAT_RESHAPE(b2, 1, 28, 28);
+		MAT_RESHAPE(b2, 1, 28, 28);	// (height, row, col)
 		mat_t *mat_input_ptr = &mat_input;
 		for(uint16_t i = CUR_SCRATCH[1]; i < 28; i = ++CUR_SCRATCH[1]) {
 			for(uint16_t j = CUR_SCRATCH[2]; j < 28; j = ++CUR_SCRATCH[2]) {
