@@ -221,6 +221,8 @@ __ro_fram mat_t mat_input = {
 	.data = input,
 };
 
+// extern fixed layer_buffers[LAYER_BUF_NUMBER][CONFIG_LAYER_BUF_SIZE];
+// #define LAYER_BUF_NUMBER 4
 __fram mat_t buf1 = {.data = LAYER_BUFFER(1)};
 __fram mat_t buf2 = {.data = LAYER_BUFFER(2)};
 __fram mat_t *b1 = &buf1;
@@ -248,6 +250,14 @@ void task_compute() {
 	uint16_t state = CUR_SCRATCH[0];
 	if(state == 0) {
 		MAT_RESHAPE(b2, 1, 28, 28);	// (height, row, col)
+		/*
+		__fram mat_t b2 = {
+			.dims = {1, 28, 28},
+			.len_dims = 3,
+			.strides = {784, 28, 1},	// 784 = 28^2
+			.data = LAYER_BUFFER(2),
+		};
+		*/
 		mat_t *mat_input_ptr = &mat_input;
 		for(uint16_t i = CUR_SCRATCH[1]; i < 28; i = ++CUR_SCRATCH[1]) {
 			for(uint16_t j = CUR_SCRATCH[2]; j < 28; j = ++CUR_SCRATCH[2]) {
@@ -262,10 +272,18 @@ void task_compute() {
 			(uint8_t *)(CUR_SCRATCH), sizeof(uint16_t));
 		transition_to(CUR_TASK);
 	} else if(state == 1) {
-		MAT_DUMP(b2, 0);
+		MAT_DUMP(b2, 0);	// print b2[0][0][0] ~ b2[0][27][27]
 		PRINTF("\r\n Layer 1");
 
 		MAT_RESHAPE(b1, 20, 28, 28);
+		/*
+		__fram mat_t b1 = {
+			.dims = {20, 28, 28},
+			.len_dims = 3,
+			.strides = {784, 28, 1},	// 784 = 28^2
+			.data = LAYER_BUFFER(1),
+		};
+		*/
 		mat_t *w_ptr = &mat_conv1_wd;
 		mat_t *b_ptr = NULL;
 		// Assumes b, w, dest, src in that order
@@ -281,6 +299,14 @@ void task_compute() {
 		PRINTF("\r\n Layer 2");
 
 		MAT_RESHAPE(b2, 20, 28, 24);
+		/*
+		__fram mat_t b2 = {
+			.dims = {20, 28, 24},
+			.len_dims = 3,
+			.strides = {672, 24, 1},	// 672 = 28*24
+			.data = LAYER_BUFFER(2),
+		};
+		*/
 		mat_t *w_ptr = &mat_conv1_wh;
 		mat_t *b_ptr = NULL;
 		// Assumes b, w, dest, src in that order
@@ -296,6 +322,14 @@ void task_compute() {
 		PRINTF("\r\n Layer 3");
 
 		MAT_RESHAPE(b1, 20, 24, 24);
+		/*
+		__fram mat_t b1 = {
+			.dims = {20, 24, 24},
+			.len_dims = 3,
+			.strides = {576, 24, 1},	// 576 = 24^2
+			.data = LAYER_BUFFER(1),
+		};
+		*/
 		mat_t *w_ptr = &mat_conv1_wv;
 		mat_t *b_ptr = &mat_conv1_b;
 		// Assumes b, w, dest, src in that order
@@ -311,6 +345,14 @@ void task_compute() {
 		PRINTF("\r\n Layer 4");
 
 		MAT_RESHAPE(b2, 20, 24, 24);
+		/*
+		__fram mat_t b2 = {
+			.dims = {20, 24, 24},
+			.len_dims = 3,
+			.strides = {576, 24, 1},	// 576 = 24^2
+			.data = LAYER_BUFFER(2),
+		};
+		*/
 		// Assumes dest, src in that order
 		PUSH_STACK(mat_stack, b2, b1);
 
