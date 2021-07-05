@@ -366,6 +366,14 @@ void task_compute() {
 		PRINTF("\r\n Layer 5");
 
 		MAT_RESHAPE(b1, 20, 12, 12);
+		/*
+		__fram mat_t b1 = {
+			.dims = {20, 12, 12},
+			.len_dims = 3,
+			.strides = {144, 12, 1},	
+			.data = LAYER_BUFFER(1)
+		};
+		*/
 		params.stride[1] = 2;
 		params.stride[2] = 2;
 		// Assumes src in that order
@@ -381,6 +389,14 @@ void task_compute() {
 		PRINTF("\r\n Layer 6");
 
 		MAT_RESHAPE(b2, 100, 8, 8);
+		/*
+		__fram mat_t b2 = {
+			.dims = {100, 8, 8},
+			.len_dims = 3,
+			.strides = {64, 8, 1},	
+			.data = LAYER_BUFFER(2)
+		};
+		*/
 		params.stride[1] = 1;
 		params.stride[2] = 1;
 		mat_t *w_ptr = &mat_conv2_w;
